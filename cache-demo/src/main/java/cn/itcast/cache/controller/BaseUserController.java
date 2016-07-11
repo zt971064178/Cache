@@ -15,7 +15,7 @@ import cn.itcast.cache.service.BaseUserService;
 
 @Controller
 @RequestMapping("/")
-public class IndexController {
+public class BaseUserController {
 	
 	@Autowired
 	private BaseUserService baseUserService ;
