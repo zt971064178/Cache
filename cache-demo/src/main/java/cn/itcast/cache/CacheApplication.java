@@ -110,12 +110,37 @@ public class CacheApplication {
 		return new CompressorSerializer(hessianSerializer) ;
 	}
 	
+	// =============================== 表达式解析器区域 ===================================
+	/*
+	 * 缓存Key及一些条件表达式，都是通过表达式与Java对象进行交互的
+	 * 框架中已经内置了使用Spring El和Javascript两种表达的解析器
+	 * 分别的：com.jarvis.cache.script.SpringELParser 和 com.jarvis.cache.script.JavaScriptParser
+	 * 如果需要扩展，需要继承com.jarvis.cache.script.AbstractScriptParser 这个抽象类
+	 */
+	/**
+	 *  getSpringELParser:(这里用一句话描述这个方法的作用). 
+	 *  @return_type:SpringELParser
+	 *  @author zhangtian  
+	 *  @return
+	 */
 	@Bean
 	public SpringELParser getSpringELParser() {
 		return new SpringELParser() ;
 	}
 	
 	// =============================== 缓存配置区域  配置CurrentHashMap缓存 ======================================
+	/*
+	 CachePointCut中可以配置参数说明：
+	 namespace ： 命名空间，在缓存表达式生成的缓存key中加入此命名空间，达到区分不同业务的数据的作用；
+	 unpersistMaxSize ： 允许不持久化变更数(当缓存变更数量超过此值才做持久化操作)，默认值为0；
+	 persistFile ： 缓存持久化文件；默认值：linux中为：/tmp/autoload-cache/+namespace+map.cache中
+	 			   windows中C:/tmp/autoload-cache/+namespace+map.cache
+	 needPersist : 是否在持久化:为true时，允许持久化，false，不允许持久化;默认值为true;
+	 copyValue : 是否拷贝缓存中的值：true时，是拷贝缓存值，可以避免外界修改缓存值；false，不拷贝缓存值，缓存中的数据可能被外界修改，但效率比较高。默认值为false;
+	 clearAndPersistPeriod : 清除和持久化的时间间隔,默认值为：60000（1分钟）；
+	  注意：通过配置init-method="start"，启动清理缓存线程；通过配置destroy-method="destroy"，释放资源
+	             使用Map做缓存，虽然可以不需要使用序列化工具进行转换数据，但还需要使用序列化工作进行深度复制。
+	 */
 	@Bean(initMethod="start", destroyMethod="destroy")
 	public CachePointCut getCachePointCut(AutoLoadConfig autoLoadConfig, 
 						HessianSerializer hessianSerializer,
