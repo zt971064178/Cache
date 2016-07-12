@@ -12,4 +12,10 @@ public interface BaseUserService {
 	public BaseUser getUserById(String id) ;
 	
 	public BaseUser getUserById2(String id) ;
+	
+	public void updateUserName(BaseUser baseUser) ;
+	
+	public void clearUserById2Cache(String id) ;
+	
+	public void clearUserCache() ;
 }

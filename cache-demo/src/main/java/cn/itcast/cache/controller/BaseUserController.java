@@ -63,10 +63,31 @@ public class BaseUserController {
 		return baseUserService.getUserList(baseUser) ;
 	}
 	
+	/*
+	 * 查询自定义缓存数据
+	 */
 	@RequestMapping("getUserById2")
 	@ResponseBody
 	public BaseUser getUserById2(HttpServletRequest request, HttpServletResponse response) {
 		String id = "3" ;
 		return baseUserService.getUserById2(id) ;
+	}
+	
+	@RequestMapping("clearBaseUserCacheById")
+	public void clearBaseUserCacheById(HttpServletRequest request, HttpServletResponse response) {
+		baseUserService.clearUserById2Cache("3");
+	}
+	
+	@RequestMapping("updateUserName")
+	public void updateUserName(HttpServletRequest request, HttpServletResponse response) {
+		BaseUser baseUser = new BaseUser() ;
+		baseUser.setUserId("3");
+		baseUser.setUsername("周星星");
+		baseUserService.updateUserName(baseUser);
+	}
+	
+	@RequestMapping("clearAllBaseUserCache")
+	public void clearAllBaseUserCache(HttpServletRequest request, HttpServletResponse response) {
+		baseUserService.clearUserCache();
 	}
 }

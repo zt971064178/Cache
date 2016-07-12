@@ -33,4 +33,22 @@ public class BaseUserServiceImpl implements BaseUserService {
 	public BaseUser getUserById2(String id) {
 		return baseUserDao.getUserById2(id);
 	}
+
+	// 清楚所有缓存
+	@Override
+	public void clearUserCache() {
+		baseUserDao.clearUserCache();
+	}
+
+	// 更新用户名  刷新缓存
+	@Override
+	public void updateUserName(BaseUser baseUser) {
+		baseUserDao.updateUserName(baseUser);
+	}
+
+	// 清除指定ID的用户的缓存
+	@Override
+	public void clearUserById2Cache(String id) {
+		baseUserDao.clearUserById2Cache(id);
+	}
 }
