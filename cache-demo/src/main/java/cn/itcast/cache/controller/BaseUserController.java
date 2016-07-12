@@ -1,5 +1,6 @@
 package cn.itcast.cache.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,9 @@ public class BaseUserController {
 	@Autowired
 	private BaseUserService baseUserService ;
 	
+	/*
+	 * 新增用户信息  缓存数据
+	 */
 	@RequestMapping("/addBaseUser")
 	@ResponseBody
     public BaseUser addBaseUser(HttpServletRequest request, HttpServletResponse response) {
@@ -29,7 +33,23 @@ public class BaseUserController {
 		baseUser.setPassword("123456");
 		baseUser.setAddress("苏州工业园区金鸡湖大道1355号");
 		
-		baseUserService.addBaseUser(baseUser) ;
+		baseUser = baseUserService.addBaseUser(baseUser) ;
         return baseUser ;
     }
+	
+	/*
+	 * 条件查询用户信息  缓存数据
+	 */
+	@RequestMapping("/getUserList")
+	@ResponseBody
+	public List<BaseUser> getUserList(HttpServletRequest request, HttpServletResponse response) {
+		BaseUser baseUser = new BaseUser() ;
+		String id = "zhangtian_caobeibei_demo" ;
+		baseUser.setUserId(id);
+		baseUser.setUsername("张田");
+		baseUser.setPassword("123456");
+		baseUser.setAddress("苏州工业园区金鸡湖大道1355号");
+		
+		return baseUserService.getUserList(baseUser) ;
+	}
 }

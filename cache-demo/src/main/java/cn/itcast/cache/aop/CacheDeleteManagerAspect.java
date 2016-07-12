@@ -10,6 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.jarvis.cache.aop.aspectj.AspectjAopInterceptor;
 
+/**
+ * ClassName: CacheDeleteManagerAspect  
+ * (切面配置，删除缓存)
+ * @author zhangtian  
+ * @version
+ */
 @Aspect
 @Component
 @Order(value=1000)
@@ -25,6 +31,7 @@ public class CacheDeleteManagerAspect {
 	
 	@AfterReturning(value="cacheDeletePointCut()", returning="retVal")
 	public void cacheDeleteAfter(JoinPoint aopProxyChain, Object retVal) {
+		System.out.println("===================== 删除缓存入口 =====================");
 		aspectjAopInterceptor.checkAndDeleteCache(aopProxyChain, retVal);
 	}
 }

@@ -9,7 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.jarvis.cache.aop.aspectj.AspectjAopInterceptor;
 
-
+/**
+ * ClassName: CacheAddManagerAspect  
+ * (切面配置，增加缓存)
+ * @author zhangtian  
+ * @version
+ */
 @Aspect
 @Component
 public class CacheAddManagerAspect {
@@ -24,6 +29,7 @@ public class CacheAddManagerAspect {
 	
 	@Around(value="cacheAddPointCut()")
 	public Object cacheAddAround(ProceedingJoinPoint p) throws Throwable {
+		System.out.println("===================== 增加缓存入口 =====================");
 		return aspectjAopInterceptor.checkAndProceed(p) ;
 	}
 	
