@@ -153,7 +153,9 @@ public class CacheApplication {
 	// ========================= AOP配置  拦截注解以及自定义拦截缓存配置项   ============================
 	@Bean
 	public AspectjAopInterceptor getAspectjAopInterceptor(CachePointCut cacheManager) {
+		// 配置缓存切面拦截AOP
 		AspectjAopInterceptor aspectjAopInterceptor = new AspectjAopInterceptor() ;
+		// 注入缓存管理器
 		aspectjAopInterceptor.setCacheManager(cacheManager);
 		return aspectjAopInterceptor ;
 	}

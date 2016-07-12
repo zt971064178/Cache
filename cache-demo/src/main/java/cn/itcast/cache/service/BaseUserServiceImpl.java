@@ -23,4 +23,14 @@ public class BaseUserServiceImpl implements BaseUserService {
 	public List<BaseUser> getUserList(BaseUser baseUser) {
 		return baseUserDao.getUserList(baseUser);
 	}
+
+	@Override
+	public BaseUser getUserById(String id) {
+		return baseUserDao.getUserById(id);
+	}
+
+	@Override
+	public BaseUser getUserById2(String id) {
+		return baseUserDao.getUserById2(id);
+	}
 }

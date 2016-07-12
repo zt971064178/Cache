@@ -8,4 +8,8 @@ public interface BaseUserService {
 	public BaseUser addBaseUser(BaseUser baseUser) ;
 	
 	public List<BaseUser> getUserList(BaseUser baseUser) ;
+	
+	public BaseUser getUserById(String id) ;
+	
+	public BaseUser getUserById2(String id) ;
 }
