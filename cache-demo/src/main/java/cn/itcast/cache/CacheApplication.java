@@ -1,5 +1,8 @@
 package cn.itcast.cache;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -8,12 +11,17 @@ import org.springframework.context.annotation.Bean;
 import com.jarvis.cache.admin.servlet.AdminServlet;
 import com.jarvis.cache.aop.aspectj.AspectjAopInterceptor;
 import com.jarvis.cache.map.CachePointCut;
+import com.jarvis.cache.redis.ShardedCachePointCut;
 import com.jarvis.cache.script.SpringELParser;
 import com.jarvis.cache.serializer.CompressorSerializer;
 import com.jarvis.cache.serializer.FastjsonSerializer;
 import com.jarvis.cache.serializer.HessianSerializer;
 import com.jarvis.cache.serializer.JdkSerializer;
 import com.jarvis.cache.to.AutoLoadConfig;
+
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisShardInfo;
+import redis.clients.jedis.ShardedJedisPool;
 
 @SpringBootApplication
 public class CacheApplication {
@@ -148,6 +156,51 @@ public class CacheApplication {
 		CachePointCut cachePointCut = new CachePointCut(autoLoadConfig, hessianSerializer, springELParser) ;
 		cachePointCut.setNamespace("test_zhangtian");
 		return cachePointCut ;
+	}
+	
+	// =============================== 缓存配置区域  配置Redis集群缓存 ======================================
+	// Jedis 连接池配置
+	@Bean
+	public JedisPoolConfig getJedisPoolConfig() {
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig() ;
+		jedisPoolConfig.setMaxTotal(2000);
+		jedisPoolConfig.setMaxIdle(100);
+		jedisPoolConfig.setMinIdle(50);
+		jedisPoolConfig.setMaxWaitMillis(2000);
+		jedisPoolConfig.setTestOnBorrow(false);
+		jedisPoolConfig.setTestOnReturn(false);
+		jedisPoolConfig.setTestWhileIdle(false);
+		
+		return jedisPoolConfig ;
+	}
+	
+	// 配置集群连接池
+	@Bean
+	public ShardedJedisPool getShardedJedisPool(JedisPoolConfig jedisPoolConfig) {
+		List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>() ;
+		shards.add(new JedisShardInfo("192.168.2.150", 6379, "instance:01")) ;
+		shards.add(new JedisShardInfo("192.168.2.150", 6380, "instance:02")) ;
+		shards.add(new JedisShardInfo("192.168.2.150", 6381, "instance:03")) ;
+		return new ShardedJedisPool(jedisPoolConfig, shards) ;
+	}
+	
+	/*
+	 * ShardedCachePointCut中可以配置参数说明：
+	   namespace ： 命名空间，在缓存表达式生成的缓存key中加入此命名空间，达到区分不同业务的数据的作用;
+	   hashExpire：Hash的缓存时长：等于0时永久缓存；大于0时，主要是为了防止一些已经不用的缓存占用内存;
+	   hashExpire小于0时，则使用@Cache中设置的expire值（默认值为-1）；
+	   hashExpireByScript ： 是否通过脚本来设置 Hash的缓存时长；
+	        注意：通过配置destroy-method="destroy"，释放资源。
+	 */
+	@Bean(destroyMethod="destroy")
+	public ShardedCachePointCut getShardedCachePointCut(AutoLoadConfig autoLoadConfig, 
+			HessianSerializer hessianSerializer,
+			SpringELParser springELParser,
+			ShardedJedisPool shardedJedisPool) {
+		ShardedCachePointCut shardedCachePointCut = new ShardedCachePointCut(autoLoadConfig, hessianSerializer, springELParser) ;
+		shardedCachePointCut.setShardedJedisPool(shardedJedisPool);
+		shardedCachePointCut.setNamespace("test_hession");
+		return shardedCachePointCut ;
 	}
 	
 	// ========================= AOP配置  拦截注解以及自定义拦截缓存配置项   ============================
