@@ -178,9 +178,12 @@ public class CacheApplication {
 	@Bean
 	public ShardedJedisPool getShardedJedisPool(JedisPoolConfig jedisPoolConfig) {
 		List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>() ;
-		shards.add(new JedisShardInfo("192.168.2.150", 6379, "instance:01")) ;
-		shards.add(new JedisShardInfo("192.168.2.150", 6380, "instance:02")) ;
-		shards.add(new JedisShardInfo("192.168.2.150", 6381, "instance:03")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7000, "instance:01")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7001, "instance:02")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7002, "instance:03")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7003, "instance:04")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7004, "instance:05")) ;
+		shards.add(new JedisShardInfo("172.16.200.101", 7005, "instance:06")) ;
 		return new ShardedJedisPool(jedisPoolConfig, shards) ;
 	}
 	
@@ -205,7 +208,8 @@ public class CacheApplication {
 	
 	// ========================= AOP配置  拦截注解以及自定义拦截缓存配置项   ============================
 	@Bean
-	public AspectjAopInterceptor getAspectjAopInterceptor(CachePointCut cacheManager) {
+	// 参数切换缓存实现
+	public AspectjAopInterceptor getAspectjAopInterceptor(ShardedCachePointCut cacheManager) {
 		// 配置缓存切面拦截AOP
 		AspectjAopInterceptor aspectjAopInterceptor = new AspectjAopInterceptor() ;
 		// 注入缓存管理器
