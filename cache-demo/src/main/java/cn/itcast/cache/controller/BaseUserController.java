@@ -54,7 +54,7 @@ public class BaseUserController {
 	public List<BaseUser> getUserList(HttpServletRequest request, HttpServletResponse response) {
 		BaseUser baseUser = new BaseUser() ;
 		// 查询时查询条件需要固定，如id不能为UUID，这样缓存永远无法命中，并且缓存中数据是累增长的
-		String id = "zhangtian_caobeibei_demo2" ;
+		String id = "zhangtian_caobeibei_demo" ;
 		baseUser.setUserId(id);
 		baseUser.setUsername("张田");
 		baseUser.setPassword("123456");

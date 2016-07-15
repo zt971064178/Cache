@@ -1,8 +1,11 @@
 package cn.itcast.cache;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -19,6 +22,8 @@ import com.jarvis.cache.serializer.HessianSerializer;
 import com.jarvis.cache.serializer.JdkSerializer;
 import com.jarvis.cache.to.AutoLoadConfig;
 
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisShardInfo;
 import redis.clients.jedis.ShardedJedisPool;
@@ -159,6 +164,32 @@ public class CacheApplication {
 	}
 	
 	// =============================== 缓存配置区域  配置Redis集群缓存 ======================================
+	@Bean
+	public GenericObjectPoolConfig getGenericObjectPoolConfig() {
+		GenericObjectPoolConfig config = new GenericObjectPoolConfig() ;
+		config.setMaxTotal(2000);
+		config.setMaxIdle(100);
+		config.setMinIdle(50);
+		config.setMaxWaitMillis(2000);
+		config.setTestOnBorrow(false);
+		config.setTestOnReturn(false);
+		config.setTestWhileIdle(false);
+		return config ;
+	}
+	
+	@Bean
+	public JedisCluster getJedisCluster(GenericObjectPoolConfig genericObjectPoolConfig){
+		Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7000)) ;
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7001)) ;
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7002)) ;
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7003)) ;
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7004)) ;
+		jedisClusterNodes.add(new HostAndPort("172.16.200.101", 7005)) ;
+		JedisCluster jedisCluster = new JedisCluster(jedisClusterNodes, genericObjectPoolConfig) ;
+		return jedisCluster ;
+	}
+	
 	// Jedis 连接池配置
 	@Bean
 	public JedisPoolConfig getJedisPoolConfig() {
@@ -173,7 +204,7 @@ public class CacheApplication {
 		
 		return jedisPoolConfig ;
 	}
-	
+
 	// 配置集群连接池
 	@Bean
 	public ShardedJedisPool getShardedJedisPool(JedisPoolConfig jedisPoolConfig) {
